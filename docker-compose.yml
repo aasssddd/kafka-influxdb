@@ -34,6 +34,8 @@ services:
         - influxsrv:influxsrv
         - kafka:kafka
         - zookeeper:zookeeper
+      volumes:
+        - ./config:/config
 
   influxsrv:
         image: hyperpilot/influx:1.2.2

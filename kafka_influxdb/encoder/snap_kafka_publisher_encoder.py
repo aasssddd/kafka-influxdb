@@ -60,7 +60,7 @@ class Encoder(object):
             try:
                 # Set flag for float precision to get the same
                 # results for Python 2 and 3.
-                json_object = self.parse_line(line)
+                json_object = self.parse_line(line.replace("\\", "\\\\"))
             except ValueError as e:
                 logging.debug("Error in encoder: %s", e)
                 continue

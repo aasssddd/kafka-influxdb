@@ -24,5 +24,4 @@ RUN apt-get update \
 ADD . /kafka-influxdb
 WORKDIR /kafka-influxdb
 RUN python setup.py install
-COPY config_example.yaml /etc/config.yaml
-CMD ["python", "-m", "kafka_influxdb", "-c", "/etc/config.yaml", "-s"]
+CMD ["python", "-m", "kafka_influxdb", "-c", "/config/config.yaml", "-s"]
