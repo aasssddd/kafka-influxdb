@@ -1,0 +1,46 @@
+version: "2"
+
+services:
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    links:
+        - zookeeper:zookeeper
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper"
+
+  snap:
+    build:
+        context: .
+        dockerfile: Dockerfile.snap
+    links:
+        - kafka:kafka
+        - zookeeper:zookeeper
+
+  kafka-influxdb:
+      build:
+          context: .
+      links:
+        - influxsrv:influxsrv
+        - kafka:kafka
+        - zookeeper:zookeeper
+
+  influxsrv:
+        image: hyperpilot/influx:1.2.2
+        ports:
+            - "8083:8083"
+            - "8086:8086"
+        environment:
+            - ADMIN_USER=root
+            - INFLUXDB_INIT_PWD=default
+            - PRE_CREATE_DB=snap

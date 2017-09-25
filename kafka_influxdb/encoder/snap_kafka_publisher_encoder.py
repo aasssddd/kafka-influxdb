@@ -67,14 +67,12 @@ class Encoder(object):
             try:
                 # to set plugin, plugin_instance as the measurement name, just need pass ['plugin', 'plugin_instance']
                 for ent in json_object:
-                    print ent
                     measurement = Encoder.format_measurement_name(ent, ['namespace'])
                     tags = Encoder.format_tags(ent, ['tags'])
                     value = Encoder.format_value(ent)
                     time = Encoder.format_time(ent)
                     measurements.append(Encoder.compose_data(measurement, tags, value, time))
             except Exception as e:
-                print e
                 logging.debug("Error in input data: %s. Skipping.", e)
                 continue
         return measurements
@@ -107,16 +105,17 @@ class Encoder(object):
         for arg in args:
             if arg in entry:
                 # to avoid add None as tag value
-                if entry[arg] != '':
-                    tag.append("{0!s}={1!s}".format(arg, entry[arg]))
+                for k in entry[arg]:
+                    tag.append("{0!s}={1!s}".format(k, entry[arg][k]))
         return ','.join(tag)
 
     @staticmethod
     def format_time(entry):
         d = datetime.datetime.strptime(entry['timestamp'][:-4], "%Y-%m-%dT%H:%M:%S.%f")
-        return time.mktime(d.timetuple())
+        return int(time.mktime(d.timetuple()))
 
     @staticmethod
     def format_value(entry):
         values = entry['data']
-        return "value={0!s}".format(str(values))
+        value = "value={0!s}".format(values)
+        return value
